@@ -356,11 +356,10 @@ public class SubscriptionService
     /// <returns>a list of subscription with metered plan</returns>
     public List<Subscriptions> GetActiveSubscriptionsWithMeteredPlan()
     {
-        var allActiveSubscription = this.subscriptionRepository.Get().ToList().Where(s => s.SubscriptionStatus == "Subscribed").ToList();
-        var allPlansData = this.planRepository.Get().ToList().Where(p => p.IsmeteringSupported == true).ToList();
-        var meteredSubscriptions = from subscription in allActiveSubscription
-            join plan in allPlansData
+        var meteredSubscriptions = from subscription in this.subscriptionRepository.Get()
+            join plan in this.planRepository.Get()
                 on subscription.AmpplanId equals plan.PlanId
+            where subscription.SubscriptionStatus == "Subscribed" && plan.IsmeteringSupported == true
             select subscription;
         return meteredSubscriptions.ToList();
     }
